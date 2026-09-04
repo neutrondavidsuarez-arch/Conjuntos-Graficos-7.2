@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLearning - Tema 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "3LjnpLaDboHWv0VPY" });
+        })();
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .iframe-container { position: relative; width: 100%; height: 75vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .nav-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn.active { border-color: #10b981; color: #10b981; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .dot-pulse { animation: pulse-dot 1.2s infinite; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl font-black text-emerald-600 tracking-tight">UNIDAD 1</h1>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Tema 7.1:Elemento Discordante</p>
+                </div>
+               
+                <nav class="flex flex-wrap justify-center gap-1 md:gap-4">
+                    <button onclick="prepQuiz('deber', this)" class="nav-btn active px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧪</span> Deber
+                    </button>
+                    <button onclick="prepQuiz('evaluacion', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📝</span> Repaso
+                    </button>
+                    <button onclick="prepQuiz('extra', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Práctica
+                    </button>
+                    <button onclick="prepQuiz('evaluacion_final', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📊</span> Evaluación
+                    </button>
+                    <button onclick="showSection('pdf', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📋</span> Pizarra
+                    </button>
+                    <button onclick="showSection('video', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🎥</span> Video
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main id="app" class="max-w-5xl mx-auto p-6">
+    </main>
+    <script>
+        const DRIVE_PDF_URL = "https://drive.google.com/file/d/1pzdZGSnQjcna8Hp0QDlQpTb_fIvxS-D9/view?usp=sharing";
+        const DRIVE_VIDEO_URL = "https://drive.google.com/file/d/1SIo-EE9car0TlbpcNnYIlouK8KpDoHKl/view?usp=sharing";
+
+
+        // PRINCIPAL (Deber + Repaso) 30/10 preguntas
+
+        const quizData = [
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/CFSCnPx/Captura-de-pantalla-2026-07-31-113541.png" alt="Descripción de la imagen" width="480" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'En el segundo conjunto, se observa que el segmento cambia de color de blanco a negro y gira 45° en sentido horario. Por lo que el primer conjunto de cumplir el mismo patrón que el segundo.  Teniendo como opción correcta la b).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/21MH1p1J/Captura-de-pantalla-2026-07-31-113659.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'D', explanation: 'Las figuras tienen su correspondiente en cuanto a las figuras, por lo que nos falta la figura en V. <br> <img src="https://i.ibb.co/ymY94h8R/Captura-de-pantalla-2026-08-29-100843.png" alt="Descripción de la imagen" width="400" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/Hf3ynbGG/Captura-de-pantalla-2026-07-31-113906.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'C', explanation: 'Tengo la figura vertical, la horizontal y me falta la figura en punta. <br> <img src="https://i.ibb.co/1cwLG2N/Captura-de-pantalla-2026-08-29-101920.png" alt="Descripción de la imagen" width="400" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/v49Hzd2c/Captura-de-pantalla-2026-07-31-113958.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'D', explanation: 'Sigue el patrón de moverse los círculos, y al unirse se convierten en uno solo pero pintado.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/B2zWrhJf/Captura-de-pantalla-2026-07-31-114133.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'D', explanation: 'Al cerrarse la figura queda la imagen blanca y el circulo al unirse se  vuelve negro. <br> <img src="https://i.ibb.co/bRL6ZrXt/Captura-de-pantalla-2026-08-29-103834.png" alt="Descripción de la imagen" width="400" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/cHRGz1W/Captura-de-pantalla-2026-07-31-114219.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D'], answer: 'A', explanation: 'Las figuras tienen un lado abierto que mira hacia la derecha, izquierda, arriba y abajo, además de que sus líneas se alternan ven hacia adentro y hacia afuera.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación?  <br> <img src="https://i.ibb.co/2Yc7Pxnj/Captura-de-pantalla-2026-07-31-114317.png" alt="Descripción de la imagen" width="450" height="450">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'E', explanation: 'En el primer conjunto se observa que se conforman por las mismas figuras en todos sus elementos, además de que en el segundo conjunto dos de ellos tienen el mismo tamaño y uno más pequeño. <br> <img src="https://i.ibb.co/v6FMy1bQ/Captura-de-pantalla-2026-08-29-104653.png" alt="Descripción de la imagen" width="400" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/Fb5sB3vs/Captura-de-pantalla-2026-07-31-114606.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'En el primer conjunto se observa que existen dos figuras iguales una incrustada en la otra, y en el segundo conjunto vemos las mismas figuras pero separadas.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/DgPqPLgM/Captura-de-pantalla-2026-07-31-114752.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'E', explanation: 'Al tener un rectángulo en el primer conjunto en el segundo se pinta la mitad del circulo, y al tener dos rectángulos se pinta el circulo completo. <br> <img src="https://i.ibb.co/SwSYXnmD/Captura-de-pantalla-2026-08-29-105642.png" alt="Descripción de la imagen" width="450" height="180">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/Q3dF6dZC/Captura-de-pantalla-2026-07-31-114921.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'El conjunto gráfico muestra que solo lleva una parte pintada y debe tener una línea que sigua la división entre el lado rayado y el blanco. <br> <img src="https://i.ibb.co/DPYdQWvw/Captura-de-pantalla-2026-08-29-110319.png" alt="Descripción de la imagen" width="480" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/DHjJNgBG/Captura-de-pantalla-2026-07-31-115049.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Los elementos en el primer conjunto están formados por 5 recuadros, y en el segundo conjunto con 6 recuadros. <br> <img src="https://i.ibb.co/PvKPkTNc/Captura-de-pantalla-2026-08-29-110808.png" alt="Descripción de la imagen" width="480" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/tT0LrRL2/Captura-de-pantalla-2026-07-31-115209.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'El conjunto gráfico muestra que están unidas dos figuras de la misma, por lo que en el conjunto de la derecha debe ser la misma figura, donde la una es completa y otra es la mitad de la misma. <br> <img src="https://i.ibb.co/vxQXywfj/Captura-de-pantalla-2026-08-29-111441.png" alt="Descripción de la imagen" width="480" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/PG7L1zpF/Captura-de-pantalla-2026-07-31-115454.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'OP', explanation: 'Los círculos están en al inicio y final de la línea que atraviesa la figura además de ser todas un cuadrado. <br> <img src="https://i.ibb.co/xtS815nW/Captura-de-pantalla-2026-08-29-111610.png" alt="Descripción de la imagen" width="480" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/ds00SZMb/Captura-de-pantalla-2026-07-31-115603.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'E', explanation: 'Cada figura aumenta progresivamente a razón de una línea, por lo que nuestra respuesta es el literal E. <br> <img src="https://i.ibb.co/sv6YgdRw/Captura-de-pantalla-2026-08-29-112433.png" alt="Descripción de la imagen" width="480" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/WNq7SJXF/Captura-de-pantalla-2026-07-31-115752.png" alt="Descripción de la imagen" width="450" height="420">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Cada figura aumenta progresivamente a razón de una línea, por lo que nuestra respuesta es el literal C. <br> <img src="https://i.ibb.co/cKXLBvLk/Captura-de-pantalla-2026-08-29-113019.png" alt="Descripción de la imagen" width="480" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/M5tKG6QV/Captura-de-pantalla-2026-08-01-093753.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Cada figura tiene una línea afuera en el primer conjunto y dos líneas en el segundo conjunto, donde las mismas forman un vértice.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/Ld09gSGC/Captura-de-pantalla-2026-08-01-093944.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Cada conjunto se puede observar que son la misma figura, solo girada..', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/nNHCTkqs/Captura-de-pantalla-2026-08-01-094121.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Cada figura esta cortada con diferentes formas, en el primer elemento se corta en forma de semi circulo, en el siguiente elemento se corta en forma de una base cuadrada y finalmente se corta en V, lo mismo debe ocurrir en el otro conjunto.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/B56B10SY/Captura-de-pantalla-2026-08-01-094353.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'En el primer conjunto las figuras toman la posición inclinada viendo hacia la derecha, luego viendo a la derecha y su forma vertical, las mismas posiciones deben tener en el conjunto de al lado. <br> <img src="https://i.ibb.co/QG7xzKD/Captura-de-pantalla-2026-08-29-114237.png" alt="Descripción de la imagen" width="480" height="140">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/qM31CJC7/Captura-de-pantalla-2026-08-01-094525.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'Cada figura en el prime conjunto tienen 3 líneas y en el segundo conjunto tienen 4 líneas, por lo que la figura correspondiente al signo de interrogación es el literal B. <br> <img src="https://i.ibb.co/cKyYjcNd/Captura-de-pantalla-2026-08-29-114733.png" alt="Descripción de la imagen" width="480" height="140">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/8gg7qrNw/Captura-de-pantalla-2026-08-01-094639.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'E', explanation: 'En el primer conjunto las figuras tienen una línea dentro de cada figura, y triangulo por fuera, en el segundo conjunto se observa que tienen el triangulo adentro y la línea afuera. <br> <img src="https://i.ibb.co/tpR5Dmvq/Captura-de-pantalla-2026-08-31-091418.png" alt="Descripción de la imagen" width="480" height="140">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/RGZRnKNw/Captura-de-pantalla-2026-08-01-094838.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'Cada figura en el prime conjunto tienen 4 líneas y en el segundo conjunto tienen 5 líneas, por lo que la figura correspondiente al signo de interrogación es el literal B. <br> <img src="https://i.ibb.co/F4C1qk80/Captura-de-pantalla-2026-08-31-091723.png" alt="Descripción de la imagen" width="420" height="140">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/HpLhNGSR/Captura-de-pantalla-2026-08-01-095012.png" alt="Descripción de la imagen" width="350" height="350">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'E', explanation: 'En el primer conjunto las figuras tienen  la misma forma que e el segundo conjunto. <br> <img src="https://i.ibb.co/295yJY9/Captura-de-pantalla-2026-08-31-092037.png" alt="Descripción de la imagen" width="420" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/L2Bdmqy/Captura-de-pantalla-2026-08-01-095314.png" alt="Descripción de la imagen" width="350" height="340">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'En el primer conjunto las figuras tienen una línea dentro de cada figura, y triangulo por fuera, en el segundo conjunto se observa que tienen el triangulo adentro y la línea afuera. <br> <img src="https://i.ibb.co/vxJJyHj1/Captura-de-pantalla-2026-08-31-092341.png" alt="Descripción de la imagen" width="420" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/B5h6gFqK/Captura-de-pantalla-2026-08-01-095525.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'La suma de los lados de la figura del primer elemento es un total de 10 lados, en el segundo elemento un total de 8 y en el tercer elemento hay de 18, lo que implica una suma de los dos primeros elementos. Lo mismo realizamos en el segundo conjunto. <br> <img src="https://i.ibb.co/VYd6G2D3/Captura-de-pantalla-2026-08-31-093056.png" alt="Descripción de la imagen" width="420" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/CK0HfByR/Captura-de-pantalla-2026-08-01-095819.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'En el primer conjunto las figuras tienen una línea dentro de cada figura, y triangulo por fuera, en el segundo conjunto se observa que tienen el triangulo adentro y la línea afuera. <br> <img src="https://i.ibb.co/bgZDdjz3/Captura-de-pantalla-2026-08-31-093254.png" alt="Descripción de la imagen" width="420" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/TMthgYKS/Captura-de-pantalla-2026-08-01-100050.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'En el primer conjunto se observa que la figura pintada es la misma que la figura que la contiene, en el segundo conjunto se ve lo mismo, con la diferencia que todas las figuras son el mismo elemento. <br> <img src="https://i.ibb.co/1t0FWwtg/Captura-de-pantalla-2026-08-31-093648.png" alt="Descripción de la imagen" width="450" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/d0sVNYSq/Captura-de-pantalla-2026-08-01-100205.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Explicación28.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/Y7RfmngZ/Captura-de-pantalla-2026-08-01-100401.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'En el primer conjunto se observa que se cierra la figura en sentido horario, lo mismo pasa en el conjunto de la derecha pero se pinta en sentido horario. <br> <img src="https://i.ibb.co/N2V19j2m/Captura-de-pantalla-2026-08-31-094900.png" alt="Descripción de la imagen" width="450" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/0pvytPJy/Captura-de-pantalla-2026-08-01-100635.png" alt="Descripción de la imagen" width="390" height="300">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'Las figuras del conjunto se mueven en sentido anti horario en ambos conjuntos. <br> <img src="https://i.ibb.co/GvjdQDC4/Captura-de-pantalla-2026-08-31-095416.png" alt="Descripción de la imagen" width="450" height="350">', multi: 'OFF', maxSelect: 1 },
+        ];
+
+
+        // Practica 20 preguntas
+
+        const quizDataExtra = [
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/ZRpdH1Vt/Captura-de-pantalla-2026-08-01-100921.png" alt="Descripción de la imagen" width="390" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Las figuras giran anti horariamente y cambiar su figura teniendo circulo, flor y más en su secuencia. <br> <img src="https://i.ibb.co/yn2btCfB/Captura-de-pantalla-2026-08-31-095702.png" alt="Descripción de la imagen" width="450" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/RpCCj8X9/Captura-de-pantalla-2026-08-01-101311.png" alt="Descripción de la imagen" width="400" height="300">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'Las figuras de los conjuntos se repiten existen tres con una estrella, y dos con un hexágono, por lo que falta uno. <br> <img src="https://i.ibb.co/Z616LK9w/Captura-de-pantalla-2026-08-31-100347.png" alt="Descripción de la imagen" width="450" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/WpvwQJz5/Captura-de-pantalla-2026-08-01-101827.png" alt="Descripción de la imagen" width="400" height="300">', options: ['A', 'B', 'C', 'D'], answer: 'C', explanation: 'La estrella gira en el primer conjunto horariamente, pero en el segundo lo hace en sentido contrario, además de la parte pintada queda en la misma posición en todos los casos. <br> <img src="https://i.ibb.co/d49DhCmk/Captura-de-pantalla-2026-08-31-100638.png" alt="Descripción de la imagen" width="450" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/d0vFg0dX/Captura-de-pantalla-2026-08-01-102057.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Se observa que existe un aumento de líneas. <br> <img src="https://i.ibb.co/YF0XrDC0/Captura-de-pantalla-2026-08-31-101206.png" alt="Descripción de la imagen" width="400" height="300">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/TqHTLryq/Captura-de-pantalla-2026-08-01-102446.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'Aumentan las líneas en cada elemento del conjunto.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/jvWvbM00/Captura-de-pantalla-2026-08-01-103738.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Se observa que la figura interna sale pero cambia de sentido, y la figura externa al salir se la divide por la mitad, además de intercambiar el color por lo que en el siguiente conjunto se debe realizar lo mismo. <br> <img src="https://i.ibb.co/Vp97Y1hh/Captura-de-pantalla-2026-08-31-101953.png" alt="Descripción de la imagen" width="450" height="300">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/wrwLKd5y/Captura-de-pantalla-2026-08-01-104121.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'La figura principal gira y se añaden dos asteriscos, por lo que la respuesta seria la opción C. <br> <img src="https://i.ibb.co/TDPJbFqw/Captura-de-pantalla-2026-08-31-102515.png" alt="Descripción de la imagen" width="500" height="300">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/VWPhcFg2/Captura-de-pantalla-2026-08-01-104250.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Las figuras del conjunto están formadas por dos números exactamente iguales. <br> <img src="https://i.ibb.co/mrSr09TB/Captura-de-pantalla-2026-08-31-102902.png" alt="Descripción de la imagen" width="500" height="300">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/PsqSzDbP/Captura-de-pantalla-2026-08-01-104717.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Dentro del primer conjunto se ve que una figura está dentro del triángulo, arriba y abajo, por lo que en el segundo conjunto se debe seguir el mismo patrón. <br> <img src="https://i.ibb.co/7N2NYhyC/Captura-de-pantalla-2026-08-31-103327.png" alt="Descripción de la imagen" width="550" height="300">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/3y0H0xXb/Captura-de-pantalla-2026-08-01-104929.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'En el primer conjunto vemos que tenemos un patrón de circulo, cuadrado y triangulo con una línea en la mitad, en el segundo conjunto conservamos la línea en la mitad y estas figuras se chocan con la misma siguiendo las mismas figuras, cuadrado, rectángulo y finalmente necesitamos un circulo, con un punto en el que se posiciona en la parte inferior. <br> <img src="https://i.ibb.co/ch1xSWrV/Captura-de-pantalla-2026-08-31-103931.png" alt="Descripción de la imagen" width="550" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/zVDWP1rN/Captura-de-pantalla-2026-08-01-105552.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'Dentro del primer conjunto las figuras giran 90 grados, y dentro están rellenadas con líneas horizontales y verticales. Dentro del segundo conjunto también está presente el giro, pero las líneas que rellenan la figura son inclinadas. <br> <img src="https://i.ibb.co/7NWmQGdr/Captura-de-pantalla-2026-08-31-104456.png" alt="Descripción de la imagen" width="550" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/1JZ9XgYw/Captura-de-pantalla-2026-08-01-105938.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'Ambos conjuntos tienen la misma figura, pero se unen primero por su parte inferior, luego por la superior y finalmente de forma lateral, en ese sentido en el segundo conjunto las figuras están juntas por su punta, por el lateral; faltando la unión por la parte superior.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/WvMTNv4j/Captura-de-pantalla-2026-08-01-110532.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Dentro del primer conjunto las figuras tienen una línea punteada de forma vertical, inclinada y horizontal; en el segundo conjunto se tiene la misma línea y además se aumenta otra completamente pintada, con la misma secuencia. <br> <img src="https://i.ibb.co/F4Gf9vmv/Captura-de-pantalla-2026-08-31-105614.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/PZ8m4bPY/Captura-de-pantalla-2026-08-01-110828.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Los elementos del primer conjunto son las mismas en cada segmento de elementos, por lo que en el segundo conjunto deben tener las mismas figuras, adicional a eso se debe pintar donde se unen las mismas. <br> <img src="https://i.ibb.co/JYXwX4W/Captura-de-pantalla-2026-08-31-110514.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/qLT6FvwF/Captura-de-pantalla-2026-08-01-112625.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Las figuras giran progresivamente primero 45°, luego 90°. <br> <img src="https://i.ibb.co/QFdy9FQt/Captura-de-pantalla-2026-08-31-110924.png" alt="Descripción de la imagen" width="500" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/LXPKP7nG/Captura-de-pantalla-2026-08-01-112735.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Los recuadros pintados forman líneas en tres direcciones: horizontal, vertical e inclinada. En el segundo conjunto aparecen únicamente líneas horizontales y verticales, por lo que faltan las líneas inclinadas. <br> <img src="https://i.ibb.co/ks9zBW4M/Captura-de-pantalla-2026-08-31-111121.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/qL4R500q/Captura-de-pantalla-2026-08-01-112831.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'A', explanation: 'En el primer conjunto todos los elementos tienen un total de 3 líneas,  y en el segundo conjunto tienen 4 líneas. <br> <img src="https://i.ibb.co/BK6JY4sx/Captura-de-pantalla-2026-08-31-111337.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/rKS1b55B/Captura-de-pantalla-2026-08-01-113047.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'Las figuras del primer conjunto se juntan en el segundo conjunto. Por lo que la respuesta correcta sería  la  opción B. <br> <img src="https://i.ibb.co/yB4ddJHV/Captura-de-pantalla-2026-08-31-111537.png" alt="Descripción de la imagen" width="500" height="150">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/T9WxbmX/Captura-de-pantalla-2026-08-01-113151.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'En el primer conjunto los elementos  tienen la siguiente disposición línea curva, línea inclinada a la izquierda y hacia la derecha. <br> <img src="https://i.ibb.co/tM46CkxK/Captura-de-pantalla-2026-08-31-111701.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de las alternativas remplaza el signo de interrogación? <br> <img src="https://i.ibb.co/1tWyJrHS/Captura-de-pantalla-2026-08-01-113348.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'C', explanation: 'Las figuras del primer conjunto se juntan en el segundo conjunto. Por lo que la respuesta correcta sería  la  opción C. <br> <img src="https://i.ibb.co/mrr50BPv/Captura-de-pantalla-2026-08-31-112020.png" alt="Descripción de la imagen" width="500" height="350">', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // EVALUACIÓN (16 preguntas)
+
+        const quizDataEvaluacion = [
+            { question: 'Reemplace el espacio en blanco. <br> <img src="https://i.ibb.co/rGZ8Kj3v/Captura-de-pantalla-2026-09-02-102003.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'El elemento más pequeño gira en sentido antihorario, además en la figura grande debe ser blanco y el punto negro. <br> <img src="https://i.ibb.co/6hwdYSn/Captura-de-pantalla-2026-09-02-102120.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Selecciona la figura que reemplaza al signo de interrogación. <br> <img src="https://i.ibb.co/XfC4WqcQ/Captura-de-pantalla-2026-09-02-102331.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'En el primer conjunto la parte pintada crece por lo que en el signo de interrogación debe ser la figura blanca.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/QjFTXp4P/Captura-de-pantalla-2026-09-02-102942.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'A', explanation: 'Dentro del primer conjunto se puede observar que cada figura tiene un color diferente, dando como resultado la tercera imagen; donde se juntan los colores se cambia el color a blanco. <br> <img src="https://i.ibb.co/rG375cWH/Captura-de-pantalla-2026-09-02-103137.png" alt="Descripción de la imagen" width="400" height="200">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/5xhFXvmC/Captura-de-pantalla-2026-09-02-103412.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'B', explanation: 'En el conjunto se duplica los elemento del elemento anterior. <br> <img src="https://i.ibb.co/TxTCT8Pm/Captura-de-pantalla-2026-09-02-103612.png" alt="Descripción de la imagen" width="400" height="200">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/JwmXTKZR/Captura-de-pantalla-2026-09-02-103858.png" alt="Descripción de la imagen" width="400" height="200">', options: ['A', 'B', 'C', 'D'], answer: 'A', explanation: 'Va aumentando el número de lados pintados además de girar. <br> <img src="https://i.ibb.co/YBW2dxDn/Captura-de-pantalla-2026-09-02-104005.png" alt="Descripción de la imagen" width="400" height="200">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/mFbsfd3K/Captura-de-pantalla-2026-09-02-104245.png" alt="Descripción de la imagen" width="400" height="250">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Aumenta el número de elemento así como el cambio de figura. <br> <img src="https://i.ibb.co/RkmR1kyJ/Captura-de-pantalla-2026-09-02-104421.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/39S7N4z7/Captura-de-pantalla-2026-09-02-104713.png" alt="Descripción de la imagen" width="400" height="250">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Los elementos juntos dan el último elemento, y en el conjunto uno el primer elemento es el elemento completo. <br> <img src="https://i.ibb.co/1tCN8hXK/Captura-de-pantalla-2026-09-02-104916.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/pBs8nr1X/Captura-de-pantalla-2026-09-02-105137.png" alt="Descripción de la imagen" width="400" height="250">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'B', explanation: 'Las líneas aumentan, además de repetir el color es decir si tengo dos elementos con líneas y dos blancos. <br> <img src="https://i.ibb.co/KcwbSPh1/Captura-de-pantalla-2026-09-02-105313.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/tM1T0pwd/Captura-de-pantalla-2026-09-02-105430.png" alt="Descripción de la imagen" width="400" height="250">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'A', explanation: 'Las figuras tienen colores específicos dos elementos grises, uno negro y uno blanco, y de cada figura se repite dos veces. <br> <img src="https://i.ibb.co/KzqHd6RC/Captura-de-pantalla-2026-09-02-105602.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/cc5PJvJx/Captura-de-pantalla-2026-09-02-105710.png" alt="Descripción de la imagen" width="400" height="250">', options: ['A', 'B', 'C', 'D', 'E'], answer: 'D', explanation: 'Los colores son blanco, negro, blanco, negro, además intercambia el elemento externo circulo, cuadrado, etc. <br> <img src="https://i.ibb.co/7tYFKkLR/Captura-de-pantalla-2026-09-02-105832.png" alt="Descripción de la imagen" width="400" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/mr8z2S3P/Captura-de-pantalla-2026-09-02-110010.png" alt="Descripción de la imagen" width="400" height="350">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'D', explanation: 'El elemento que se asemeja a una flecha cambia a triángulo pero no cambia de color. <br> <img src="https://i.ibb.co/pBJ0TxWs/Captura-de-pantalla-2026-09-02-110501.png" alt="Descripción de la imagen" width="400" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/DftD540y/Captura-de-pantalla-2026-09-02-112714.png" alt="Descripción de la imagen" width="480" height="350">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'B', explanation: 'La primera y segunda figura se complementan para formar el tercer elemento. <br> <img src="https://i.ibb.co/S4WFTTCf/Captura-de-pantalla-2026-09-02-113011.png" alt="Descripción de la imagen" width="480" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/xShmcqKL/Captura-de-pantalla-2026-09-02-113134.png" alt="Descripción de la imagen" width="480" height="350">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'E', explanation: 'El elemento se repite. <br> <img src="https://i.ibb.co/VcPvT1fQ/Captura-de-pantalla-2026-09-02-113316.png" alt="Descripción de la imagen" width="480" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/xq2yCHvy/Captura-de-pantalla-2026-09-02-113533.png" alt="Descripción de la imagen" width="480" height="350">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'A', explanation: 'La primera y segunda figura se complementan para formar el tercer elemento. <br> <img src="https://i.ibb.co/XxNcjtZ5/Captura-de-pantalla-2026-09-02-113743.png" alt="Descripción de la imagen" width="480" height="350">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/YYJCNX6/Captura-de-pantalla-2026-09-02-114603.png" alt="Descripción de la imagen" width="480" height="250">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'A', explanation: 'Las tres figuras se repiten en el primer conjunto se tiene 2 cuadrados y un triángulo, y dentro del segundo conjunto un triángulo y dos círculos. <br> <img src="https://i.ibb.co/d02Fwxtx/Captura-de-pantalla-2026-09-02-114829.png" alt="Descripción de la imagen" width="480" height="250">', multi: 'OFF', maxSelect: 1 },
+            { question: 'Reemplaza a la interrogante <br> <img src="https://i.ibb.co/ddq0TLx/Captura-de-pantalla-2026-09-02-115032.png" alt="Descripción de la imagen" width="480" height="250">', options: ['A', 'B', 'C', 'D', 'E', 'F'], answer: 'D', explanation: ' <br> <img src="https://i.ibb.co/PZBw9m8w/Captura-de-pantalla-2026-09-02-115247.png" alt="Descripción de la imagen" width="480" height="250">.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        let state = {
+            currentMode: 'deber',
+            view: 'quiz_home',
+            studentName: '',
+            studentEmail: '',
+            activeQuestions: [],
+            currentQuestion: 0,
+            score: 0,
+            selectedAnswer: null,
+            isAnswerCorrect: null,
+            emailStatus: null,
+            emailAnalysis: null,
+            emailAnalysisMsg: ''
+        };
+
+        const disposableDomains = [
+            'tempmail.com','temp-mail.org','guerrillamail.com','10minutemail.com','mailinator.com',
+            'yopmail.com','throwawaymail.com','fakeinbox.com','trashmail.com','getnada.com',
+            'maildrop.cc','dispostable.com','sharklasers.com','guerrillamailblock.com'
+        ];
+        const trustedProviders = [
+            'gmail.com','googlemail.com','hotmail.com','hotmail.es','hotmail.co.uk','outlook.com',
+            'outlook.es','live.com','msn.com','yahoo.com','yahoo.es','icloud.com','me.com',
+            'protonmail.com','proton.me','aol.com','zoho.com','gmx.com','mail.com'
+        ];
+
+        function isValidEmailFormat(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+            return re.test(email) && email.length <= 254 && !email.includes('..') && !email.startsWith('.') && !email.endsWith('.');
+        }
+
+        function analyzeEmail(email) {
+            const lower = email.toLowerCase().trim();
+            if (!lower) {
+                return { valid: false, msg: 'Escribe un correo electrónico.' };
+            }
+            if (!isValidEmailFormat(lower)) {
+                return { valid: false, msg: 'Formato inválido. Revisa que tenga @ y un dominio correcto.' };
+            }
+            const domain = lower.split('@')[1];
+            if (!domain || domain.length < 3) {
+                return { valid: false, msg: 'Dominio incompleto o inválido.' };
+            }
+            if (disposableDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+                return { valid: false, msg: 'Correo temporal / desechable detectado. Usa un correo real.' };
+            }
+            const isTrusted = trustedProviders.some(p => domain === p);
+            const hasGoodTld = /\.(com|es|net|org|edu|gov|mx|ar|co|uk|de|fr|it|pt|br|cl)$/i.test(domain);
+            if (!hasGoodTld && !isTrusted) {
+                return { valid: false, msg: 'Dominio poco común o sospechoso. Usa Gmail, Hotmail/Outlook, Yahoo, etc.' };
+            }
+            let analysisText = '';
+            if (domain.includes('hotmail') || domain.includes('outlook') || domain.includes('live.com') || domain.includes('msn.com')) {
+                analysisText = 'Análisis: proveedor Microsoft (Hotmail/Outlook) detectado · formato correcto · dominio legítimo';
+            } else if (domain.includes('gmail') || domain.includes('googlemail')) {
+                analysisText = 'Análisis: proveedor Google (Gmail) detectado · formato correcto · dominio legítimo';
+            } else if (isTrusted) {
+                analysisText = 'Análisis: proveedor conocido · formato correcto · dominio legítimo';
+            } else {
+                analysisText = 'Análisis: formato válido · dominio con TLD estándar · no se detectaron patrones de correo temporal';
+            }
+            return { valid: true, msg: analysisText };
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const app = document.getElementById('app');
+            if (section === 'pdf') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">📄 Pizarra Virtual</h2><div class="iframe-container"><iframe src="${DRIVE_PDF_URL}" width="100%" height="100%"></iframe></div></div>`;
+            } else if (section === 'video') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">🎥 Video Clase</h2><div class="iframe-container"><iframe src="${DRIVE_VIDEO_URL}" width="100%" height="100%"></iframe></div></div>`;
+            }
+        }
+
+        function prepQuiz(mode, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+           
+            state = {
+                currentMode: mode,
+                view: 'quiz_home',
+                studentName: '',
+                studentEmail: '',
+                activeQuestions: [],
+                currentQuestion: 0,
+                score: 0,
+                selectedAnswer: null,
+                isAnswerCorrect: null,
+                emailStatus: null,
+                emailAnalysis: null,
+                emailAnalysisMsg: ''
+            };
+            render();
+        }
+
+        function startQuiz() {
+            if (state.currentMode === 'deber') {
+                // Práctica: 30 preguntas en orden
+                state.activeQuestions = [...quizData].slice(0, 30);
+            } else if (state.currentMode === 'evaluacion') {
+                // Repaso: 10 preguntas aleatorias
+                state.activeQuestions = [...quizData]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 10);
+            } else if (state.currentMode === 'extra') {
+                // Deber: 20 preguntas en orden
+                state.activeQuestions = [...quizDataExtra].slice(0, 20);
+            } else if (state.currentMode === 'evaluacion_final') {
+                // Evaluación: 16 preguntas en orden
+                state.activeQuestions = [...quizDataEvaluacion];
+            }
+            state.view = 'name_input';
+            state.emailAnalysis = null;
+            state.emailAnalysisMsg = '';
+            render();
+        }
+
+        function onEmailInput() {
+            const e = document.getElementById('email-in');
+            if (!e) return;
+            const val = e.value.trim();
+            if (val.length < 5) {
+                state.emailAnalysis = null;
+                state.emailAnalysisMsg = '';
+                updateEmailUI();
+                return;
+            }
+            state.emailAnalysis = 'checking';
+            state.emailAnalysisMsg = 'Analizando correo…';
+            updateEmailUI();
+            clearTimeout(window._emailCheckTimer);
+            window._emailCheckTimer = setTimeout(() => {
+                const result = analyzeEmail(val);
+                state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+                state.emailAnalysisMsg = result.msg;
+                updateEmailUI();
+            }, 600);
+        }
+
+        function updateEmailUI() {
+            const feedback = document.getElementById('email-feedback');
+            const analysis = document.getElementById('email-analysis');
+            const input = document.getElementById('email-in');
+            if (!feedback || !analysis || !input) return;
+            if (state.emailAnalysis === 'checking') {
+                feedback.innerHTML = `<span class="text-slate-500 text-sm flex items-center gap-2"><span class="dot-pulse">●</span> Verificando…</span>`;
+                analysis.innerHTML = `<p class="text-xs text-slate-400 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            } else if (state.emailAnalysis === 'invalid') {
+                feedback.innerHTML = `<span class="text-red-600 text-sm font-semibold">✗ Correo no válido o inexistente</span>`;
+                analysis.innerHTML = `<p class="text-xs text-red-500/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-emerald-400', 'border-slate-300');
+                input.classList.add('border-red-400');
+            } else if (state.emailAnalysis === 'valid') {
+                feedback.innerHTML = `<span class="text-emerald-600 text-sm font-semibold">✓ Correo aceptado</span>`;
+                analysis.innerHTML = `<p class="text-xs text-emerald-600/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-slate-300');
+                input.classList.add('border-emerald-400');
+            } else {
+                feedback.innerHTML = '';
+                analysis.innerHTML = '';
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            }
+        }
+
+        function validaDatos() {
+            const n = document.getElementById('name-in').value.trim();
+            const e = document.getElementById('email-in').value.trim();
+            if (n.length <= 2) {
+                alert("Ingresa nombre completo (mínimo 3 caracteres).");
+                return;
+            }
+            const result = analyzeEmail(e);
+            state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+            state.emailAnalysisMsg = result.msg;
+            updateEmailUI();
+            if (!result.valid) return;
+            state.studentName = n;
+            state.studentEmail = e;
+            state.view = 'playing';
+            render();
+        }
+
+        // ---------- LÓGICA SINGLE + MULTI ----------
+        function isMultiQuestion(q) {
+            return q.multi === 'ON';
+        }
+
+        function arraysEqual(a, b) {
+            if (!Array.isArray(a) || !Array.isArray(b)) return false;
+            if (a.length !== b.length) return false;
+            const sa = [...a].sort();
+            const sb = [...b].sort();
+            return sa.every((v, i) => v === sb[i]);
+        }
+
+        function handleAnswer(option) {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+
+            if (isMultiQuestion(currentQ)) {
+                let selected = Array.isArray(state.selectedAnswer) ? [...state.selectedAnswer] : [];
+                const idx = selected.indexOf(option);
+
+                if (idx > -1) {
+                    selected.splice(idx, 1);
+                } else {
+                    if (selected.length >= currentQ.maxSelect) return;
+                    selected.push(option);
+                }
+                state.selectedAnswer = selected;
+                render();
+            } else {
+                if (state.selectedAnswer !== null) return;
+                state.selectedAnswer = option;
+                state.isAnswerCorrect = (option === currentQ.answer);
+                if (state.isAnswerCorrect) state.score++;
+                render();
+                if (state.isAnswerCorrect) {
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }
+        }
+
+        function checkMultiAnswer() {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            if (!isMultiQuestion(currentQ)) return;
+
+            const selected = Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [];
+            if (selected.length === 0) return;
+
+            const correctAnswers = Array.isArray(currentQ.answer) ? currentQ.answer : [currentQ.answer];
+            state.isAnswerCorrect = arraysEqual(selected, correctAnswers);
+
+            if (state.isAnswerCorrect) state.score++;
+            render();
+
+            if (state.isAnswerCorrect) {
+                setTimeout(() => nextQuestion(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion + 1 < state.activeQuestions.length) {
+                state.currentQuestion++;
+                state.selectedAnswer = null;
+                state.isAnswerCorrect = null;
+                render();
+            } else {
+                state.view = 'results';
+                render();
+                enviarCorreo();
+            }
+        }
+
+        function enviarCorreo() {
+            if (!state.studentEmail) return;
+            state.emailStatus = 'sending';
+            render();
+            const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+            const totalQ = state.activeQuestions.length;
+            let imageUrl = '';
+            let mensaje = '';
+            if (scorePerc >= 90) {
+                imageUrl = 'https://img.icons8.com/color/128/medal2.png';
+                mensaje = `¡Excelente trabajo, ${state.studentName}! Obtuviste un resultado sobresaliente.`;
+            } else if (scorePerc >= 70) {
+                imageUrl = 'https://img.icons8.com/color/128/diploma.png';
+                mensaje = `¡Muy bien, ${state.studentName}! Has aprobado con un buen resultado.`;
+            } else if (scorePerc >= 50) {
+                imageUrl = 'https://img.icons8.com/color/128/ok.png';
+                mensaje = `Buen esfuerzo, ${state.studentName}. Sigue practicando para mejorar.`;
+            } else {
+                imageUrl = 'https://img.icons8.com/color/128/error.png';
+                mensaje = `Ánimo, ${state.studentName}. Revisa el material y vuelve a intentarlo.`;
+            }
+            const params = {
+                to_name: state.studentName,
+                to_email: state.studentEmail,
+                score: scorePerc,
+                correct_answers: state.score,
+                total_questions: totalQ,
+                mode_name: state.currentMode.toUpperCase(),
+                image_url: imageUrl,
+                mensaje: mensaje,
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+            };
+            emailjs.send("service_dhvsi72", "template_cy74x9h", params)
+                .then(() => {
+                    state.emailStatus = 'success';
+                    render();
+                })
+                .catch((err) => {
+                    console.error('Error EmailJS:', err);
+                    state.emailStatus = 'error';
+                    render();
+                });
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+           
+            let modeTitle = '';
+            let modeDesc = '';
+            if (state.currentMode === 'deber') {
+                modeTitle = '🧪 Deber';
+                modeDesc = 'Resuelve las 30 preguntas del banco en orden.';
+            } else if (state.currentMode === 'evaluacion') {
+                modeTitle = '📝 Repaso';
+                modeDesc = 'Prueba de 10 preguntas seleccionadas al azar.';
+            } else if (state.currentMode === 'extra') {
+                modeTitle = '📚 Práctica';
+                modeDesc = 'Resuelve las 20 preguntas del Deber.';
+            } else if (state.currentMode === 'evaluacion_final') {
+                modeTitle = '📊 Evaluación';
+                modeDesc = 'Resuelve las 16 preguntas de la Evaluación.';
+            }
+           
+            if (state.view === 'quiz_home') {
+                app.innerHTML = `
+                <div class="text-center py-16 animate-fade-in bg-white rounded-[3rem] shadow-xl border">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">${modeTitle}</h2>
+                    <p class="text-slate-500 mb-8 text-lg">${modeDesc}</p>
+                    <button onclick="startQuiz()" class="bg-emerald-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all">
+                        INICIAR
+                    </button>
+                </div>`;
+            }
+
+            if (state.view === 'name_input') {
+                app.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-[2.5rem] shadow-2xl animate-fade-in">
+                    <h2 class="text-2xl font-black mb-6 text-center">Registro de Estudiante</h2>
+                    <input id="name-in" type="text" placeholder="Nombre y Apellido completo" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+                   
+                    <div class="relative mb-1">
+                        <input id="email-in" type="email" placeholder="Correo para recibir nota (Gmail, Hotmail…)"
+                               class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl focus:border-emerald-500 outline-none transition-colors"
+                               oninput="onEmailInput()" onblur="onEmailInput()">
+                    </div>
+                   
+                    <div id="email-feedback" class="min-h-[22px] mb-1"></div>
+                    <div id="email-analysis" class="mb-5"></div>
+                   
+                    <button onclick="validaDatos()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                        ENTRAR AL TEST
+                    </button>
+                    <p class="text-center text-[11px] text-slate-400 mt-4">Se verifica formato y se descartan correos temporales. No se envía nada hasta terminar el test.</p>
+                </div>`;
+                setTimeout(updateEmailUI, 50);
+            }
+
+            if (state.view === 'playing') {
+                const q = state.activeQuestions[state.currentQuestion];
+                const progress = ((state.currentQuestion + 1) / state.activeQuestions.length) * 100;
+                const multi = isMultiQuestion(q);
+                const selected = multi
+                    ? (Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [])
+                    : (state.selectedAnswer ? [state.selectedAnswer] : []);
+
+                const multiHint = multi
+                    ? `<p class="text-sm text-sky-600 font-semibold mb-4">
+                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
+                       </p>`
+                    : '';
+
+                app.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 px-4">
+                        <span class="font-black text-emerald-600">${state.currentQuestion + 1} / ${state.activeQuestions.length}</span>
+                        <div class="w-48 bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full transition-all" style="width:${progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">${q.question}</h2>
+                        ${multiHint}
+                        <div class="grid gap-3">
+                            ${q.options.map(opt => {
+                                let style = "border-slate-100 bg-slate-50 hover:border-emerald-200";
+                                const isSelected = selected.includes(opt);
+
+                                if (state.isAnswerCorrect !== null) {
+                                    if (multi) {
+                                        const correctSet = Array.isArray(q.answer) ? q.answer : [q.answer];
+                                        if (correctSet.includes(opt) && isSelected) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected && !correctSet.includes(opt)) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        } else if (correctSet.includes(opt) && !isSelected) {
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    } else {
+                                        if (isSelected) {
+                                            style = state.isAnswerCorrect
+                                                ? "border-emerald-500 bg-emerald-100 text-emerald-800"
+                                                : "border-red-500 bg-red-100 text-red-800";
+                                        }
+                                    }
+                                } else if (isSelected) {
+                                    if (multi) {
+                                        style = "border-sky-400 bg-sky-100 text-sky-800";
+                                    } else {
+                                        style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                    }
+                                }
+
+                                return `<button onclick="handleAnswer('${opt.replace(/'/g, "\\'")}')" 
+                                            class="p-5 text-left border-2 rounded-xl font-bold transition-all ${style}">
+                                            ${opt}
+                                        </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${multi && state.isAnswerCorrect === null ? `
+                            <button onclick="checkMultiAnswer()" 
+                                class="mt-6 w-full py-4 rounded-xl font-bold transition-all
+                                ${selected.length === q.maxSelect 
+                                    ? 'bg-sky-600 text-white hover:bg-sky-700' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
+                                ${selected.length !== q.maxSelect ? 'disabled' : ''}>
+                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                            </button>
+                        ` : ''}
+
+                        ${state.selectedAnswer !== null && state.isAnswerCorrect === false ? `
+                            <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+                                <p class="font-bold text-amber-800 mb-2">Explicación:</p>
+                                <p class="text-slate-700">${q.explanation}</p>
+                            </div>
+                            <button onclick="nextQuestion()" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all">
+                                Siguiente pregunta
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            if (state.view === 'results') {
+                const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+                app.innerHTML = `
+                <div class="max-w-md mx-auto text-center animate-fade-in bg-white p-12 rounded-[3rem] shadow-2xl">
+                    <h2 class="text-2xl font-black mb-2">${state.studentName}</h2>
+                    <p class="text-slate-400 uppercase text-xs font-bold mb-6">${state.currentMode}</p>
+                    <div class="text-7xl font-black text-emerald-600 mb-4">${scorePerc}%</div>
+                    <p class="text-lg font-bold text-slate-700 mb-10">${state.score} / ${state.activeQuestions.length} correctas</p>
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">VOLVER AL INICIO</button>
+                    <p class="mt-6 text-xs font-bold text-slate-400">
+                        ${state.emailStatus === 'success' ? '✅ Nota e imagen enviadas al correo' :
+                          state.emailStatus === 'error' ? '⚠️ Error al enviar nota e imagen' :
+                          '⏳ Enviando nota e imagen al correo...'}
+                    </p>
+                </div>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
